@@ -6,6 +6,7 @@ metadata:
   author: restacked-ai
   website: https://unyak.me
   skills_repo: https://github.com/restacked-ai/unyak-skills
+license: MIT
 ---
 
 # /unyak-feedback — Capture feedback

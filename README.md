@@ -30,7 +30,15 @@ The skills in this repo teach your coding agent the Unyak workflow — how to in
 
 Skills live in `.agents/skills/` at your project root. Claude Code (and most other agents) also pick them up via `.claude/skills/`, which is a symlink that Unyak manages automatically.
 
-### Option 1 — Let the agent auto-install (recommended)
+### Option 1 — One command (recommended)
+
+```bash
+npx skills add restacked-ai/unyak-skills
+```
+
+Then open your project in your agent and type `/unyak-start`.
+
+### Option 2 — Let the agent auto-install
 
 Copy only the router skill into your project, then type `/unyak` — it will fetch and install the remaining skills from GitHub automatically.
 
@@ -48,7 +56,7 @@ Open your agent (e.g. Claude Code) in the project directory, then type:
 
 The router will fetch all remaining skills, create the `.claude/skills` symlink, and walk you through first-time setup.
 
-### Option 2 — Clone the full repo
+### Option 3 — Clone the full repo
 
 ```bash
 # From your project root
@@ -58,7 +66,7 @@ git clone https://github.com/restacked-ai/unyak-skills .agents/skills
 ln -s ../.agents/skills .claude/skills
 ```
 
-### Option 3 — Copy individual skill folders
+### Option 4 — Copy individual skill folders
 
 Copy only the skills you want into `.agents/skills/` — each folder must contain a `SKILL.md` file.
 

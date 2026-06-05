@@ -17,9 +17,10 @@ The skills in this repo teach your coding agent the Unyak workflow — how to in
 | Skill | Command | Purpose |
 |---|---|---|
 | [unyak](unyak/SKILL.md) | `/unyak` | Entry point and router. Verifies setup, checks versions, routes to the right command skill. |
-| [unyak-start](unyak-start/SKILL.md) | `/unyak-start` | Initialize Unyak in a project. Creates `AGENTS.md`, `.unyak/` tracking dir, and runs the project intent interview. |
-| [unyak-log](unyak-log/SKILL.md) | `/unyak-log` | Quick mid-session capture. Appends one decision, error, workaround, or command to `AGENTS.md`. |
-| [unyak-update](unyak-update/SKILL.md) | `/unyak-update` | End-of-session review. Scans the conversation and updates `AGENTS.md` with new insights, patterns, and commands. |
+| [unyak-start](unyak-start/SKILL.md) | `/unyak-start` | Initialize Unyak in a project. Creates `AGENTS.md`, `.unyak/` tracking dir, and runs an adaptive project intent interview. |
+| [unyak-plan](unyak-plan/SKILL.md) | `/unyak-plan` | Deep project planning. Runs a structured interview (goals, users, pain, journey, features, scope) and writes a well-specified `AGENTS.md`. Use before building starts when the idea needs more than a quick interview. |
+| [unyak-log](unyak-log/SKILL.md) | `/unyak-log` | Quick mid-session capture. Appends one decision, error, workaround, or command to `AGENTS.md`. Only logs what can't be discovered from the code. |
+| [unyak-update](unyak-update/SKILL.md) | `/unyak-update` | End-of-session review. Scans the conversation, updates `AGENTS.md` with new insights, and flags stale or drifted content. |
 | [unyak-help](unyak-help/SKILL.md) | `/unyak-help` | Diagnose a blocker. Reads `AGENTS.md` history and analyses the codebase to propose specific next steps. |
 | [unyak-suggest](unyak-suggest/SKILL.md) | `/unyak-suggest` | Push a pattern or blueprint change to the team (requires Unyak Teams). |
 | [unyak-feedback](unyak-feedback/SKILL.md) | `/unyak-feedback` | Send a bug report or feedback to the Unyak team. |
@@ -91,10 +92,12 @@ Once installed, open the project in your agent and type:
 /unyak-start
 ```
 
-The agent will ask six short questions about your project and write the answers into `AGENTS.md`. From there:
+The agent reads the project first (package.json, README, git log), then asks only what it can't already see. For a more thorough setup — when you want to map user goals, pain points, and scope before building — run `/unyak-plan` instead. unyak-start will offer this automatically if your project doesn't have an AGENTS.md yet.
 
-- Type `/unyak-log <something worth remembering>` anytime during a session to capture a decision or command.
-- Type `/unyak-update` at the end of a session to sync everything back to `AGENTS.md`.
+From there:
+
+- Type `/unyak-log <something worth remembering>` anytime during a session to capture a decision or command. The skill checks whether it's actually worth logging before writing anything.
+- Type `/unyak-update` at the end of a session to sync everything back to `AGENTS.md`. It also scans for stale content and flags scope drift.
 - Type `/unyak-help` when you're stuck — it reads your history and proposes specific next steps.
 - Type `/unyak-check-update` to pull the latest skill versions from GitHub.
 
@@ -120,6 +123,8 @@ unyak-skills/
 ├── unyak/                  # Router and entry point
 │   └── SKILL.md
 ├── unyak-start/            # Project initialization
+│   └── SKILL.md
+├── unyak-plan/             # Deep project planning
 │   └── SKILL.md
 ├── unyak-log/              # Quick mid-session capture
 │   └── SKILL.md

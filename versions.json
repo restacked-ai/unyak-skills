@@ -1,10 +1,11 @@
 {
-  "unyak": "1.0.0",
-  "unyak-start": "1.0.0",
-  "unyak-log": "1.0.0",
-  "unyak-update": "1.0.0",
+  "unyak": "1.1.0",
+  "unyak-start": "1.1.0",
+  "unyak-log": "1.1.0",
+  "unyak-update": "1.1.0",
   "unyak-help": "1.0.0",
   "unyak-feedback": "1.0.0",
   "unyak-suggest": "1.0.0",
-  "unyak-check-update": "1.0.0"
+  "unyak-check-update": "1.0.0",
+  "unyak-plan": "1.0.0"
 }

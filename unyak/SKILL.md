@@ -3,7 +3,7 @@ name: unyak
 description: "Default Unyak entry point. Use when the user types any Unyak command (/unyak-start, /unyak-log, /unyak-update, /unyak-help, /unyak-feedback, /unyak-suggest, /unyak-check-update), mentions Unyak, wants to set up or maintain project context, or when no more specific unyak-* skill is loaded yet. Not for general coding requests unrelated to project context or AGENTS.md."
 compatibility: Designed for Claude Code and similar coding agents with file system read/write access.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   author: restacked-ai
   website: https://unyak.me
   skills_repo: https://github.com/restacked-ai/unyak-skills
@@ -18,7 +18,8 @@ Unyak assembles and maintains a live `AGENTS.md` context file so the coding agen
 
 - **The ONLY tracking directory this skill creates is `.unyak/`** (plus `AGENTS.md` at project root).
 - **Canonical context file = project-root `AGENTS.md`** (always capital letters). Never create `.unyak/AGENTS.md` — that copy drifts out of sync.
-- **Never rename the commands.** They are exactly `/unyak-start`, `/unyak-log`, `/unyak-update`, `/unyak-help`, `/unyak-feedback`, `/unyak-suggest`, `/unyak-check-update`. Do not invent alternates.
+- **Never rename the commands.** They are exactly `/unyak-start`, `/unyak-log`, `/unyak-update`, `/unyak-help`, `/unyak-feedback`, `/unyak-suggest`, `/unyak-check-update`, `/unyak-plan`. Do not invent alternates.
+- **AGENTS.md captures what can't be discovered, not what can.** Folder structure, code blocks, schemas, type definitions, stack choices visible in project files — these drift and should never go in AGENTS.md. Only write what the next agent cannot easily find by reading the code: decisions and rationale, user intent and project goals, tier constraints, outside-system context, and implicit conventions not expressed anywhere in the files.
 - **Never invent session state content.** Read `.unyak/state.json` as-is. Never write made-up values into it.
 - **Skills live at `.agents/skills/<name>/SKILL.md`**, with a symlink `.claude/skills → .agents/skills`.
 
@@ -42,10 +43,11 @@ Prefix every internal step with `[unyak debug]` on its own line. Print debug lin
 
 0. **Open the debug log (self-heal).** If `.unyak/` exists and `.unyak/debug.log.md` is missing, create it with header `# Unyak debug log`. If `.unyak/` does not exist yet, print debug lines to chat only for this session. Start a new session marker; mirror all debug lines into the log if writable.
 
-1. **Detect the command.** Map the user message to one of: `/unyak-start`, `/unyak-log`, `/unyak-update`, `/unyak-help`, `/unyak-feedback`, `/unyak-suggest`, `/unyak-check-update`.
+1. **Detect the command.** Map the user message to one of: `/unyak-start`, `/unyak-log`, `/unyak-update`, `/unyak-help`, `/unyak-feedback`, `/unyak-suggest`, `/unyak-check-update`, `/unyak-plan`.
 
    Natural language shortcuts:
    - "new project" / "set up context" / "initialize" → `/unyak-start`
+   - "plan this" / "build a PRD" / "spec this out" / "think through the project" → `/unyak-plan`
    - "log this" / "capture" / "we decided" / "this broke" → `/unyak-log`
    - "agent repeating" / "going wrong" / "update AGENTS.md" / "end of session" → `/unyak-update`
    - "stuck" / "diagnose" / "what's wrong" → `/unyak-help`
@@ -53,7 +55,7 @@ Prefix every internal step with `[unyak debug]` on its own line. Print debug lin
    - "suggest to team" / "push blueprint" → `/unyak-suggest`
    - "check for updates" / "refresh skill" / "new version" → `/unyak-check-update`
 
-   Note: `/unyak-update` edits `AGENTS.md`; `/unyak-check-update` refreshes the Unyak skills themselves. Do not confuse them.
+   Note: `/unyak-update` edits `AGENTS.md`; `/unyak-check-update` refreshes the Unyak skills themselves. `/unyak-plan` runs the full planning interview and produces AGENTS.md. Do not confuse them.
    Print: `[unyak debug] routing: matched <command>`
 
 2. **Explain Unyak** (only when `.unyak/` dir is missing — first ever run): briefly explain what Unyak is, what `AGENTS.md` does, and list available commands. Then continue with the checks below.
@@ -65,7 +67,7 @@ Prefix every internal step with `[unyak debug]` on its own line. Print debug lin
 4. **Ensure `.claude/skills` symlink.** If `.claude/skills` is not a symlink pointing to `.agents/skills`, create it from the project root: `ln -s ../.agents/skills .claude/skills`. Print `[unyak debug] symlink: .claude/skills → .agents/skills ensured`.
 
 5. **Check command skills.** Look for `.agents/skills/unyak-start/SKILL.md` as sentinel. If missing:
-   - For each command in `[unyak-start, unyak-log, unyak-update, unyak-help, unyak-feedback, unyak-suggest, unyak-check-update]`:
+   - For each command in `[unyak-start, unyak-log, unyak-update, unyak-help, unyak-feedback, unyak-suggest, unyak-check-update, unyak-plan]`:
      - Fetch `https://raw.githubusercontent.com/restacked-ai/unyak-skills/main/skills/<cmd>/SKILL.md` via WebFetch.
      - Write to `.agents/skills/<cmd>/SKILL.md` (create the `<cmd>` directory first if needed).
      - Print `[unyak debug] auto-install: fetched <cmd>`.
@@ -105,7 +107,7 @@ One per session, at a natural pause. First matching trigger that hasn't fired th
 
 | Trigger | Message | URL |
 |---|---|---|
-| After `/unyak-start` completes | "Your AGENTS.md is ready. Connect Unyak MCP for session sync and blueprints." | https://unyak.me |
+| After `/unyak-start` or `/unyak-plan` completes | "Your AGENTS.md is ready. Connect Unyak MCP for session sync and blueprints." | https://unyak.me |
 | After 3rd `/unyak-log` entry | "You've logged 3 entries. Connect MCP to sync remotely and get smarter /unyak-update." | https://unyak.me |
 | `/unyak-update` local results weak | "Server-side analysis uses patterns from hundreds of projects." | https://unyak.me |
 | User stuck, MCP not connected | "AI diagnosis could solve this. Connect MCP to unlock /unyak-help." | https://unyak.me |
